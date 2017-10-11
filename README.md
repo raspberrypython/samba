@@ -30,12 +30,18 @@ OR set local storage:
     Usage: samba.sh [-opt] [command]
     Options (fields in '[]' are optional, '<>' are required):
         -h          This help
+        -c "<from:to>" setup character mapping for file/directory names
+                    required arg: "<from:to>" character mappings separated by ','
+        -g "<parameter>" Provide global option for smb.conf
+                    required arg: "<parameter>" - IE: -g "log level = 2"
         -i "<path>" Import smbpassword
                     required arg: "<path>" - full file path in container
         -n          Start the 'nmbd' daemon to advertise the shares
         -p          Set ownership and permissions on the shares
-        -s "<name;/path>[;browsable;readonly;guest;users;admins]" Configure a share
-                    required arg: "<name>;<comment>;</path>"
+        -r          Disable recycle bin for shares
+        -S          Disable SMB2 minimum version
+        -s "<name;/path>[;browse;readonly;guest;users;admins;wl]" Config a share
+                    required arg: "<name>;</path>"
                     <name> is how it's called for clients
                     <path> path to share
                     NOTE: for the default values, just leave blank
@@ -44,24 +50,32 @@ OR set local storage:
                     [guest] allowed default:'yes' or 'no'
                     [users] allowed default:'all' or list of allowed users
                     [admins] allowed default:'none' or list of admin users
+                    [writelist] list of users that can write to a RO share
         -t ""       Configure timezone
                     possible arg: "[timezone]" - zoneinfo timezone for container
-        -u "<username;password>"       Add a user
+        -u "<username;password>[;ID;group]"       Add a user
                     required arg: "<username>;<passwd>"
                     <username> for user
                     <password> for user
                     [ID] for user
+                    [group] for user
         -w "<workgroup>"       Configure the workgroup (domain) samba should use
                     required arg: "<workgroup>"
                     <workgroup> for samba
+        -W          Allow access wide symbolic links
 
     The 'command' (if provided and valid) will be run instead of samba
 
 ENVIRONMENT VARIABLES (only available with `docker run`)
 
+ * `CHARMAP` - As above, configure character mapping
  * `NMBD` - As above, enable nmbd
+ * `SMB` - As above, disable SMB2 minimum version
  * `TZ` - As above, set a zoneinfo timezone, IE `EST5EDT`
+ * `WIDELINKS` - As above, allow access wide symbolic links
  * `WORKGROUP` - As above, set workgroup
+ * `USERID` - Set the UID for the samba server
+ * `GROUPID` - Set the GID for the samba server
 
 **NOTE**: if you enable nmbd (via `-n` or the `NMBD` environment variable), you
 will also want to expose port 137 and 138 with `-p 137:137/udp -p 138:138/udp`.
